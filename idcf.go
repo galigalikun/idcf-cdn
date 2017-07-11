@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -61,4 +62,20 @@ func (i *Idcf) signature() string {
 
 func main() {
 	fmt.Println("vim-go")
+
+	apiKey := flag.String("api-key", "", "api key")
+	secretKey := flag.String("secret-key", "", "secret key")
+	deletePath := flag.String("delete-path", "", "delete path")
+	day := flag.Int("day", 8, "extend day")
+	flag.Parse()
+
+	idcf := Idcf{
+		ApiKey:     *apiKey,
+		method:     "DELETE",
+		DeletePath: *deletePath,
+		secretKey:  *secretKey,
+		uri:        "/api/v0/caches",
+	}
+
+	idcf.call(idcf.url(), time.Now().AddDate(0, 0, *day))
 }
