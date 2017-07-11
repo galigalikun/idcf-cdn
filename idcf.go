@@ -29,10 +29,8 @@ func (i *Idcf) url() string {
 
 func (i *Idcf) call(url string, expired time.Time) {
 	i.Expired = expired.Unix()
-	var buf bytes.Buffer
-	enc := json.NewEncoder(&buf)
-	enc.Encode(&i)
-	req, _ := http.NewRequest(i.method, url, &buf)
+	request_body, _ := json.Marshal(i)
+	req, _ := http.NewRequest(i.method, url, bytes.NewBuffer(request_body))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("expired", fmt.Sprintf("%d", i.Expired))
 	req.Header.Set("signature", i.signature())

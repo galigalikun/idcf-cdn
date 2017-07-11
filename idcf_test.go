@@ -35,8 +35,7 @@ secret
 }
 
 func TestCall(t *testing.T) {
-	bodyTest := `{"api_key":"apikey","delete_path":"http://aaaaa/.*","expired":1371646123}
-`
+	bodyTest := `{"api_key":"apikey","delete_path":"http://aaaaa/.*","expired":1371646123}`
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("signature") != "ZDZmNDMyNWJjYzkyMmRiZmUwODk1ZGE2ZDFmZWI1NTI4ZGUwMmZlOGY4OWM1NWI5ZmRjNjhiN2QxYzFiNTUzZQ==" {
 			t.Errorf("signature:%s", r.Header.Get("signature"))
