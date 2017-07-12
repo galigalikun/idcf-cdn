@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -28,10 +29,8 @@ func (i *Idcf) url() string {
 
 func (i *Idcf) call(url string, expired time.Time) {
 	i.Expired = expired.Unix()
-	var buf bytes.Buffer
-	enc := json.NewEncoder(&buf)
-	enc.Encode(&i)
-	req, _ := http.NewRequest(i.method, url, &buf)
+	request_body, _ := json.Marshal(i)
+	req, _ := http.NewRequest(i.method, url, bytes.NewBuffer(request_body))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("expired", fmt.Sprintf("%d", i.Expired))
 	req.Header.Set("signature", i.signature())
@@ -61,4 +60,20 @@ func (i *Idcf) signature() string {
 
 func main() {
 	fmt.Println("vim-go")
+
+	apiKey := flag.String("api-key", "", "api key")
+	secretKey := flag.String("secret-key", "", "secret key")
+	deletePath := flag.String("delete-path", "", "delete path")
+	day := flag.Int("day", 8, "extend day")
+	flag.Parse()
+
+	idcf := Idcf{
+		ApiKey:     *apiKey,
+		method:     "DELETE",
+		DeletePath: *deletePath,
+		secretKey:  *secretKey,
+		uri:        "/api/v0/caches",
+	}
+
+	idcf.call(idcf.url(), time.Now().AddDate(0, 0, *day))
 }
