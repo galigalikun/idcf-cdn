@@ -61,19 +61,26 @@ func (i *Idcf) signature() string {
 func main() {
 	fmt.Println("vim-go")
 
-	apiKey := flag.String("api-key", "", "api key")
-	secretKey := flag.String("secret-key", "", "secret key")
-	deletePath := flag.String("delete-path", "", "delete path")
-	day := flag.Int("day", 8, "extend day")
+	var (
+		apiKey     string
+		secretKey  string
+		deletePath string
+		day        int
+	)
+
+	flag.StringVar(&apiKey, "api-key", "", "api key")
+	flag.StringVar(&secretKey, "secret-key", "", "secret key")
+	flag.StringVar(&deletePath, "delete-path", "", "delete path")
+	flag.IntVar(&day, "day", 8, "extend day")
 	flag.Parse()
 
 	idcf := Idcf{
-		ApiKey:     *apiKey,
+		ApiKey:     apiKey,
 		method:     "DELETE",
-		DeletePath: *deletePath,
-		secretKey:  *secretKey,
+		DeletePath: deletePath,
+		secretKey:  secretKey,
 		uri:        "/api/v0/caches",
 	}
 
-	idcf.call(idcf.url(), time.Now().AddDate(0, 0, *day))
+	idcf.call(idcf.url(), time.Now().AddDate(0, 0, day))
 }
