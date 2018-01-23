@@ -26,7 +26,7 @@ func (i *Idcf) url() string {
 	return fmt.Sprintf("https://cdn.idcfcloud.com%s", i.Uri)
 }
 
-func (i *Idcf) Call(expired time.Time) {
+func (i *Idcf) Call(expired time.Time) error {
 	i.Expired = expired.Unix()
 	request_body, _ := json.Marshal(i)
 	req, _ := http.NewRequest(i.Method, i.url(), bytes.NewBuffer(request_body))
@@ -35,11 +35,22 @@ func (i *Idcf) Call(expired time.Time) {
 	req.Header.Set("signature", i.signature())
 
 	client := new(http.Client)
-	resp, _ := client.Do(req)
+	resp, err := client.Do(req)
 	defer resp.Body.Close()
+	if err != nil {
+		return err
+	}
 
-	byteArray, _ := ioutil.ReadAll(resp.Body)
+	byteArray, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf(string(byteArray))
+	}
 	fmt.Println(string(byteArray))
+
+	return nil
 }
 
 func (i *Idcf) str() string {

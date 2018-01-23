@@ -2,14 +2,13 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	"log"
 	"time"
 
 	idcf "github.com/galigalikun/idcf-cdn"
 )
 
 func main() {
-	fmt.Println("vim-go")
 
 	var (
 		apiKey     string
@@ -32,5 +31,8 @@ func main() {
 		Uri:        "/api/v0/caches",
 	}
 
-	idcf.Call(time.Now().AddDate(0, 0, day))
+	err := idcf.Call(time.Now().AddDate(0, 0, day))
+	if err != nil {
+		log.Fatal(err)
+	}
 }
