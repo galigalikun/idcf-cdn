@@ -23,13 +23,13 @@ apikey
 secret
 12345678
 /api/v0/caches
-{"api_key":"apikey","delete_path":"http://aaaaa/.*","expired":12345678}`
+{"api_key":"apikey","delete_path":"http://aaaaa/.*","expired":12345678,"SecretKey":"secret","Method":"DELETE","Uri":"/api/v0/caches"}`
 
 	if idcf.str() != str {
 		t.Errorf("str:%s", idcf.str())
 	}
 
-	if idcf.signature() != "ODIwZDc0YTBhN2VmMmMyYzNkMGIwNGZlMzAwZGM1YmJjYzVkYmI5NzU0ZWE5NmZjZjkxNDg2NmE4NGFmYmIyMg==" {
+	if idcf.signature() != "NzA3MWNmNjk3MzlkZjZjNThiOGY0OTcyZWUwZDNiODczZmYyMDhlNTJkMGIxN2Q4NjJjNmU5NGIyNDJlNWVkOQ==" {
 		t.Errorf("signature:%s", idcf.signature())
 	}
 }
