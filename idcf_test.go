@@ -1,4 +1,4 @@
-package main
+package idcf
 
 import (
 	"io/ioutil"
@@ -11,11 +11,11 @@ import (
 func TestSignature(t *testing.T) {
 	idcf := Idcf{
 		ApiKey:     "apikey",
-		method:     "DELETE",
+		Method:     "DELETE",
 		DeletePath: "http://aaaaa/.*",
-		secretKey:  "secret",
+		SecretKey:  "secret",
 		Expired:    12345678,
-		uri:        "/api/v0/caches",
+		Uri:        "/api/v0/caches",
 	}
 
 	str := `DELETE
@@ -56,11 +56,11 @@ func TestCall(t *testing.T) {
 
 	idcf := Idcf{
 		ApiKey:     "apikey",
-		method:     "DELETE",
+		Method:     "DELETE",
 		DeletePath: "http://aaaaa/.*",
-		secretKey:  "secret",
-		uri:        "/api/v0/caches",
+		SecretKey:  "secret",
+		Uri:        "/api/v0/caches",
 	}
 
-	idcf.call(ts.URL, time.Unix(1371646123, 0))
+	idcf.Call(time.Unix(1371646123, 0))
 }

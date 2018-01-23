@@ -1,4 +1,4 @@
-package main
+package idcf
 
 import (
 	"bytes"
@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -18,19 +17,19 @@ type Idcf struct {
 	ApiKey     string `json:"api_key"`
 	DeletePath string `json:"delete_path"`
 	Expired    int64  `json:"expired"`
-	secretKey  string
-	method     string
-	uri        string
+	SecretKey  string
+	Method     string
+	Uri        string
 }
 
 func (i *Idcf) url() string {
-	return fmt.Sprintf("https://cdn.idcfcloud.com%s", i.uri)
+	return fmt.Sprintf("https://cdn.idcfcloud.com%s", i.Uri)
 }
 
-func (i *Idcf) call(url string, expired time.Time) {
+func (i *Idcf) Call(expired time.Time) {
 	i.Expired = expired.Unix()
 	request_body, _ := json.Marshal(i)
-	req, _ := http.NewRequest(i.method, url, bytes.NewBuffer(request_body))
+	req, _ := http.NewRequest(i.Method, i.url(), bytes.NewBuffer(request_body))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("expired", fmt.Sprintf("%d", i.Expired))
 	req.Header.Set("signature", i.signature())
@@ -48,39 +47,12 @@ func (i *Idcf) str() string {
 	if err != nil {
 		panic(err)
 	}
-	return fmt.Sprintf("%s\n%s\n%s\n%d\n%s\n%s", i.method, i.ApiKey, i.secretKey, i.Expired, i.uri, string(request_body))
+	return fmt.Sprintf("%s\n%s\n%s\n%d\n%s\n%s", i.Method, i.ApiKey, i.SecretKey, i.Expired, i.Uri, string(request_body))
 }
 
 func (i *Idcf) signature() string {
-	mac := hmac.New(sha256.New, []byte(i.secretKey))
+	mac := hmac.New(sha256.New, []byte(i.SecretKey))
 	mac.Write([]byte(i.str()))
 
 	return base64.StdEncoding.EncodeToString([]byte(hex.EncodeToString(mac.Sum(nil))))
-}
-
-func main() {
-	fmt.Println("vim-go")
-
-	var (
-		apiKey     string
-		secretKey  string
-		deletePath string
-		day        int
-	)
-
-	flag.StringVar(&apiKey, "api-key", "", "api key")
-	flag.StringVar(&secretKey, "secret-key", "", "secret key")
-	flag.StringVar(&deletePath, "delete-path", "", "delete path")
-	flag.IntVar(&day, "day", 8, "extend day")
-	flag.Parse()
-
-	idcf := Idcf{
-		ApiKey:     apiKey,
-		method:     "DELETE",
-		DeletePath: deletePath,
-		secretKey:  secretKey,
-		uri:        "/api/v0/caches",
-	}
-
-	idcf.call(idcf.url(), time.Now().AddDate(0, 0, day))
 }
