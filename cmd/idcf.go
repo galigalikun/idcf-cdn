@@ -24,11 +24,11 @@ func main() {
 	flag.Parse()
 
 	idcf := idcf.Idcf{
-		ApiKey:     apiKey,
+		APIKey:     apiKey,
 		Method:     "DELETE",
 		DeletePath: deletePath,
 		SecretKey:  secretKey,
-		Uri:        "/api/v0/caches",
+		URI:        "/api/v0/caches",
 	}
 
 	err := idcf.Call(time.Now().AddDate(0, 0, day))
